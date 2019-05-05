@@ -5,7 +5,7 @@ using UnityEngine;
 public class Pawn : ChessFigure {
     public override bool[,] PossibleMove() {
         bool[,] r = new bool[3, 3];
-        ChessFigure c, c2;
+        ChessFigure c;
 
         if (isWhite) {
             // Diagonal Left

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
+using System;
 
 public class BoardManager : MonoBehaviour
 {
@@ -15,6 +17,8 @@ public class BoardManager : MonoBehaviour
     private List<GameObject> activeFigures = new List<GameObject>();
     public bool isWhiteTurn = true;
     bool hasLegalMoves = true;
+    public bool useAI;
+    public AI ai;
 
     // Start is called before the first frame update
     void Start(){
@@ -27,19 +31,46 @@ public class BoardManager : MonoBehaviour
     void Update(){
         DrawChessBoard();
         UpdateSelection();
-        if (Input.GetMouseButtonDown(0)) {
-            if (selectionX >= 0 && selectionY >= 0) {
-                if (selectedFigure == null)
-                    SelectChessFigure(selectionX, selectionY);
-                else
-                    MoveChessFigure(selectionX, selectionY);
+        if (useAI) {
+            switch (isWhiteTurn) {
+                case true:
+                    if (Input.GetMouseButtonDown(0)) {
+                        if (selectionX >= 0 && selectionY >= 0) {
+                            if (selectedFigure == null)
+                                SelectChessFigure(selectionX, selectionY);
+                            else
+                                MoveChessFigure(selectionX, selectionY);
+                        }
+                    }
+                    break;
+                case false:
+                    Vector2 aiMove = new Vector2();
+                    do {
+                        selectedFigure = ai.SelectChessFigure();
+                        allowedMoves = selectedFigure.PossibleMove();
+                        aiMove = ai.MakeMove(selectedFigure);
+                    } while (aiMove.x < 0 && aiMove.y < 0);
+                    Debug.Log("Moving (" + selectedFigure.CurrentX + "," + selectedFigure.CurrentY + ") to (" + aiMove.x + "," + aiMove.y + ")");
+                    MoveChessFigure((int) Math.Round(aiMove.x), (int) Math.Round(aiMove.y));
+                    break;
+                default:
+                    break;
             }
-            hasLegalMoves = CheckLegalMoves();
+        } else {
+            if (Input.GetMouseButtonDown(0)) {
+                if (selectionX >= 0 && selectionY >= 0) {
+                    if (selectedFigure == null)
+                        SelectChessFigure(selectionX, selectionY);
+                    else
+                        MoveChessFigure(selectionX, selectionY);
+                }
+            }
         }
 
+        hasLegalMoves = CheckLegalMoves();
 
         if (!hasLegalMoves) {
-            EndGame(true);
+            StartCoroutine(EndGame(true));
         }
     }
 
@@ -100,17 +131,18 @@ public class BoardManager : MonoBehaviour
             }
 
             ChessFigurePositions[selectedFigure.CurrentX, selectedFigure.CurrentY] = null;
-            selectedFigure.transform.position = GetTileCenter(x, y);
+            selectedFigure.transform.DOMove(GetTileCenter(x, y), 0.5f);
+            //selectedFigure.transform.position = GetTileCenter(x, y);
             selectedFigure.SetPosition(x, y);
             ChessFigurePositions[x, y] = selectedFigure;
             switch (y) {
                 case 1:
+                    isWhiteTurn = !isWhiteTurn;
                     break;
                 default:
-                    EndGame(false);
+                    StartCoroutine(EndGame(false));
                     break;
             }
-            isWhiteTurn = !isWhiteTurn;
         }
 
         BoardHighlighting.Instance.HideHighlights();
@@ -178,7 +210,8 @@ public class BoardManager : MonoBehaviour
         SpawnChessFigure(1, 2, 2);
     }
 
-    private void EndGame(bool negate) {
+    IEnumerator EndGame(bool negate) {
+        yield return new WaitForSeconds(0.5f);
         if (negate) {
             isWhiteTurn = !isWhiteTurn;
         }
@@ -191,7 +224,11 @@ public class BoardManager : MonoBehaviour
         foreach (GameObject go in activeFigures)
             Destroy(go);
 
-
         SceneManager.LoadScene("Result");
+        yield return null;
+    }
+
+    public List<GameObject> GetAllActiveFigures() {
+        return activeFigures;
     }
 }
