@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI : MonoBehaviour
-{
+public class AI : MonoBehaviour {
     System.Random r = new System.Random();
 
     public ChessFigure SelectChessFigure() {
@@ -23,8 +22,8 @@ public class AI : MonoBehaviour
 
         List<Vector2> possibleMovements = new List<Vector2>();
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < GameDetails.BoardSizeX; i++) {
+            for (int j = 0; j < GameDetails.BoardSizeY; j++) {
                 if (possibleMoves[i, j]) {
                     possibleMovements.Add(new Vector2(i, j));
                 }

@@ -4,26 +4,26 @@ using UnityEngine;
 
 public class Pawn : ChessFigure {
     public override bool[,] PossibleMove() {
-        bool[,] r = new bool[3, 3];
+        bool[,] r = new bool[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
         ChessFigure c;
 
         if (isWhite) {
             // Diagonal Left
-            if (CurrentX != 0 && CurrentY != 2) {
+            if (CurrentX != 0 && CurrentY != GameDetails.BoardSizeY - 1) {
                 c = BoardManager.Instance.ChessFigurePositions[CurrentX - 1, CurrentY + 1];
                 if (c != null && !c.isWhite) {
                     r[CurrentX - 1, CurrentY + 1] = true;
                 }
             }
             // Diagonal Right
-            if (CurrentX != 2 && CurrentY != 2) {
+            if (CurrentX != GameDetails.BoardSizeX - 1 && CurrentY != GameDetails.BoardSizeY - 1) {
                 c = BoardManager.Instance.ChessFigurePositions[CurrentX + 1, CurrentY + 1];
                 if (c != null && !c.isWhite) {
                     r[CurrentX + 1, CurrentY + 1] = true;
                 }
             }
             // Forward
-            if (CurrentY != 2) {
+            if (CurrentY != GameDetails.BoardSizeY - 1) {
                 c = BoardManager.Instance.ChessFigurePositions[CurrentX, CurrentY + 1];
                 if (c == null) {
                     r[CurrentX, CurrentY + 1] = true;
@@ -38,7 +38,7 @@ public class Pawn : ChessFigure {
                 }
             }
             // Diagonal Right
-            if (CurrentX != 2 && CurrentY != 0) {
+            if (CurrentX != GameDetails.BoardSizeX - 1 && CurrentY != 0) {
                 c = BoardManager.Instance.ChessFigurePositions[CurrentX + 1, CurrentY - 1];
                 if (c != null && c.isWhite) {
                     r[CurrentX + 1, CurrentY - 1] = true;

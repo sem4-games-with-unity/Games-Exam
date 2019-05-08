@@ -5,11 +5,16 @@ using UnityEngine.SceneManagement;
 using DG.Tweening;
 using System;
 
-public class BoardManager : MonoBehaviour
-{
-    public static BoardManager Instance { get; set; }
-    private bool[,] allowedMoves { get; set; }
-    public ChessFigure[,] ChessFigurePositions { get; set; }
+public class BoardManager : MonoBehaviour {
+    public static BoardManager Instance {
+        get; set;
+    }
+    private bool[,] allowedMoves {
+        get; set;
+    }
+    public ChessFigure[,] ChessFigurePositions {
+        get; set;
+    }
     private ChessFigure selectedFigure;
     private const float TILE_SIZE = 1.0f, TILE_OFFSET = 0.5f;
     int selectionX = -1, selectionY = -1;
@@ -19,21 +24,51 @@ public class BoardManager : MonoBehaviour
     bool hasLegalMoves = true;
     public bool useAI;
     public AI ai;
+    private bool endgame = false;
 
     // Start is called before the first frame update
-    void Start(){
+    void Start() {
         Instance = this;
-        ChessFigurePositions = new ChessFigure[3, 3];
+        ChessFigurePositions = new ChessFigure[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
         SpawnAllChessFigures();
     }
 
     // Update is called once per frame
-    void Update(){
+    void Update() {
         DrawChessBoard();
         UpdateSelection();
-        if (useAI) {
-            switch (isWhiteTurn) {
-                case true:
+        hasLegalMoves = CheckLegalMoves();
+        if (!hasLegalMoves) {
+            endgame = true;
+            StartCoroutine(EndGame(true));
+        } else {
+            if (!endgame) {
+                if (useAI) {
+                    switch (isWhiteTurn) {
+                        case true:
+                            if (Input.GetMouseButtonDown(0)) {
+                                if (selectionX >= 0 && selectionY >= 0) {
+                                    if (selectedFigure == null)
+                                        SelectChessFigure(selectionX, selectionY);
+                                    else
+                                        MoveChessFigure(selectionX, selectionY);
+                                }
+                            }
+                            break;
+                        case false:
+                            Vector2 aiMove = new Vector2();
+                            do {
+                                selectedFigure = ai.SelectChessFigure();
+                                allowedMoves = selectedFigure.PossibleMove();
+                                aiMove = ai.MakeMove(selectedFigure);
+                            } while (aiMove.x < 0 && aiMove.y < 0);
+                            Debug.Log("Moving (" + selectedFigure.CurrentX + "," + selectedFigure.CurrentY + ") to (" + aiMove.x + "," + aiMove.y + ")");
+                            MoveChessFigure((int) Math.Round(aiMove.x), (int) Math.Round(aiMove.y));
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
                     if (Input.GetMouseButtonDown(0)) {
                         if (selectionX >= 0 && selectionY >= 0) {
                             if (selectedFigure == null)
@@ -42,35 +77,8 @@ public class BoardManager : MonoBehaviour
                                 MoveChessFigure(selectionX, selectionY);
                         }
                     }
-                    break;
-                case false:
-                    Vector2 aiMove = new Vector2();
-                    do {
-                        selectedFigure = ai.SelectChessFigure();
-                        allowedMoves = selectedFigure.PossibleMove();
-                        aiMove = ai.MakeMove(selectedFigure);
-                    } while (aiMove.x < 0 && aiMove.y < 0);
-                    Debug.Log("Moving (" + selectedFigure.CurrentX + "," + selectedFigure.CurrentY + ") to (" + aiMove.x + "," + aiMove.y + ")");
-                    MoveChessFigure((int) Math.Round(aiMove.x), (int) Math.Round(aiMove.y));
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            if (Input.GetMouseButtonDown(0)) {
-                if (selectionX >= 0 && selectionY >= 0) {
-                    if (selectedFigure == null)
-                        SelectChessFigure(selectionX, selectionY);
-                    else
-                        MoveChessFigure(selectionX, selectionY);
                 }
             }
-        }
-
-        hasLegalMoves = CheckLegalMoves();
-
-        if (!hasLegalMoves) {
-            StartCoroutine(EndGame(true));
         }
     }
 
@@ -83,8 +91,8 @@ public class BoardManager : MonoBehaviour
         bool hasAtLeastOneMove = false;
         allowedMoves = ChessFigurePositions[x, y].PossibleMove();
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < GameDetails.BoardSizeX; i++) {
+            for (int j = 0; j < GameDetails.BoardSizeY; j++) {
                 if (allowedMoves[i, j]) {
                     hasAtLeastOneMove = true;
                     i = 2;
@@ -135,13 +143,11 @@ public class BoardManager : MonoBehaviour
             //selectedFigure.transform.position = GetTileCenter(x, y);
             selectedFigure.SetPosition(x, y);
             ChessFigurePositions[x, y] = selectedFigure;
-            switch (y) {
-                case 1:
-                    isWhiteTurn = !isWhiteTurn;
-                    break;
-                default:
-                    StartCoroutine(EndGame(false));
-                    break;
+            if (y == 0 || y == GameDetails.BoardSizeY - 1) {
+                endgame = true;
+                StartCoroutine(EndGame(false));
+            } else {
+                isWhiteTurn = !isWhiteTurn;
             }
         }
 
@@ -150,13 +156,13 @@ public class BoardManager : MonoBehaviour
     }
 
     private void DrawChessBoard() {
-        Vector3 widthLine = Vector3.right * 3;
-        Vector3 heightLine = Vector3.forward * 3;
+        Vector3 widthLine = Vector3.right * GameDetails.BoardSizeX;
+        Vector3 heightLine = Vector3.forward * GameDetails.BoardSizeY;
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= GameDetails.BoardSizeX; i++) {
             Vector3 start = Vector3.forward * i;
             Debug.DrawLine(start, start + widthLine);
-            for (int j = 0; j <= 3; j++) {
+            for (int j = 0; j <= GameDetails.BoardSizeY; j++) {
                 start = Vector3.right * j;
                 Debug.DrawLine(start, start + heightLine);
             }
@@ -200,26 +206,30 @@ public class BoardManager : MonoBehaviour
     }
 
     private void SpawnAllChessFigures() {
-        // White
-        SpawnChessFigure(0, 0, 0);
-        SpawnChessFigure(0, 1, 0);
-        SpawnChessFigure(0, 2, 0);
-        // Black
-        SpawnChessFigure(1, 0, 2);
-        SpawnChessFigure(1, 1, 2);
-        SpawnChessFigure(1, 2, 2);
+        for (int i = 0; i < GameDetails.BoardSizeX; i++) {
+            // White
+            SpawnChessFigure(0, i, 0);
+            // Black
+            SpawnChessFigure(1, i, GameDetails.BoardSizeY - 1);
+        }
     }
 
     IEnumerator EndGame(bool negate) {
         yield return new WaitForSeconds(0.5f);
         if (negate) {
             isWhiteTurn = !isWhiteTurn;
+            GameDetails.WinCondition = "had no available moves";
+        } else {
+            GameDetails.WinCondition = "reached the final line";
         }
 
-        if (isWhiteTurn)
+        if (isWhiteTurn) {
             GameDetails.Winner = GameDetails.Team.White;
-        else
+            GameDetails.Loser = GameDetails.Team.Black;
+        } else {
             GameDetails.Winner = GameDetails.Team.Black;
+            GameDetails.Loser = GameDetails.Team.White;
+        }
 
         foreach (GameObject go in activeFigures)
             Destroy(go);

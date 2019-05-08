@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 
 public abstract class ChessFigure : MonoBehaviour {
-    public int CurrentX { get; set; }
-    public int CurrentY { get; set; }
+    public int CurrentX {
+        get; set;
+    }
+    public int CurrentY {
+        get; set;
+    }
     public bool isWhite;
 
     public void SetPosition(int x, int y) {
@@ -11,6 +15,6 @@ public abstract class ChessFigure : MonoBehaviour {
     }
 
     public virtual bool[,] PossibleMove() {
-        return new bool[3, 3];
+        return new bool[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
     }
 }

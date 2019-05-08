@@ -3,25 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Buttonhandler : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+public class Buttonhandler : MonoBehaviour {
     public void LoadSingleplayer() {
-        SceneManager.LoadScene("3x3 AI");
+        GameDetails.GameMode = GameDetails.Mode.Singleplayer;
+        SceneManager.LoadScene("Board Select");
     }
 
     public void LoadMultiplayer() {
-        SceneManager.LoadScene("3x3");
+        GameDetails.GameMode = GameDetails.Mode.Multiplayer;
+        SceneManager.LoadScene("Board Select");
+    }
+
+    public void SetBoard(string board) {
+        switch (board) {
+            case "3x3":
+                GameDetails.BoardSizeX = 3;
+                GameDetails.BoardSizeY = 3;
+                break;
+            case "4x3":
+                GameDetails.BoardSizeX = 4;
+                GameDetails.BoardSizeY = 3;
+                break;
+            case "4x4":
+                GameDetails.BoardSizeX = 4;
+                GameDetails.BoardSizeY = 4;
+                break;
+            case "5x3":
+                GameDetails.BoardSizeX = 5;
+                GameDetails.BoardSizeY = 3;
+                break;
+            case "5x4":
+                GameDetails.BoardSizeX = 5;
+                GameDetails.BoardSizeY = 4;
+                break;
+            case "5x5":
+                GameDetails.BoardSizeX = 5;
+                GameDetails.BoardSizeY = 5;
+                break;
+            default:
+                break;
+        }
+        switch (GameDetails.GameMode) {
+            case GameDetails.Mode.Singleplayer:
+                SceneManager.LoadScene("Singleplayer");
+                break;
+            case GameDetails.Mode.Multiplayer:
+                SceneManager.LoadScene("Multiplayer");
+                break;
+            default:
+                break;
+        }
     }
 
     public void LoadHowToPlay() {
