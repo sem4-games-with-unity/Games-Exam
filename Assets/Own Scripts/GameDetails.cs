@@ -15,7 +15,7 @@ public class GameDetails : MonoBehaviour {
 
     private static Team winner, loser;
     private static string winCondition;
-    private static int boardSizeX = 4, boardSizeY = 4;
+    private static int boardSizeX = 3, boardSizeY = 3;
     private static Mode mode = Mode.Singleplayer;
 
     public static Mode GameMode {

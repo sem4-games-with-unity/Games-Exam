@@ -43,16 +43,7 @@ public class Buttonhandler : MonoBehaviour {
             default:
                 break;
         }
-        switch (GameDetails.GameMode) {
-            case GameDetails.Mode.Singleplayer:
-                SceneManager.LoadScene("Singleplayer");
-                break;
-            case GameDetails.Mode.Multiplayer:
-                SceneManager.LoadScene("Multiplayer");
-                break;
-            default:
-                break;
-        }
+        SceneManager.LoadScene(board);
     }
 
     public void LoadHowToPlay() {

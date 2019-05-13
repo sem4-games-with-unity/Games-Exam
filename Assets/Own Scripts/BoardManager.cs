@@ -22,12 +22,13 @@ public class BoardManager : MonoBehaviour {
     private List<GameObject> activeFigures = new List<GameObject>();
     public bool isWhiteTurn = true;
     bool hasLegalMoves = true;
-    public bool useAI;
+    bool useAI;
     public AI ai;
     private bool endgame = false;
 
     // Start is called before the first frame update
     void Start() {
+        useAI = GameDetails.GameMode == GameDetails.Mode.Singleplayer;
         Instance = this;
         ChessFigurePositions = new ChessFigure[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
         SpawnAllChessFigures();
@@ -95,7 +96,7 @@ public class BoardManager : MonoBehaviour {
             for (int j = 0; j < GameDetails.BoardSizeY; j++) {
                 if (allowedMoves[i, j]) {
                     hasAtLeastOneMove = true;
-                    i = 2;
+                    i = GameDetails.BoardSizeX - 1;
                     break;
                 }
             }

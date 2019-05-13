@@ -11,16 +11,25 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: 21ac31b78b621da43a87ed331f785664
-  - enabled: 1
-    path: Assets/Scenes/3x3 AI.unity
-    guid: 113d7ccb752b5a94f821a1a7677bdffc
-  - enabled: 1
-    path: Assets/Scenes/3x3.unity
-    guid: 8838f9296b43dbe4895f6849619f0d9e
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Result.unity
     guid: 5dcf54e2be7baae4f8640aa1fc5a949a
   - enabled: 1
     path: Assets/Scenes/How to play.unity
     guid: b524ec7ce7659664ba671c1c8357601d
+  - enabled: 1
+    path: Assets/Scenes/3x3.unity
+    guid: 6c4fb71cae1b57a47ae59f6aa457dbe3
+  - enabled: 1
+    path: Assets/Scenes/4x3.unity
+    guid: beb84efc5791317499cd610118e73a3b
+  - enabled: 1
+    path: Assets/Scenes/Board Select.unity
+    guid: 7d6c275dae47bca4abd480efb328f2d4
   m_configObjects: {}
