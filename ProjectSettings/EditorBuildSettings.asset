@@ -8,21 +8,18 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: 21ac31b78b621da43a87ed331f785664
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/Result.unity
-    guid: 5dcf54e2be7baae4f8640aa1fc5a949a
-  - enabled: 1
-    path: Assets/Scenes/How to play.unity
-    guid: b524ec7ce7659664ba671c1c8357601d
+    path: Assets/Scenes/Board Select.unity
+    guid: 7d6c275dae47bca4abd480efb328f2d4
   - enabled: 1
     path: Assets/Scenes/3x3.unity
     guid: 6c4fb71cae1b57a47ae59f6aa457dbe3
@@ -30,6 +27,21 @@ EditorBuildSettings:
     path: Assets/Scenes/4x3.unity
     guid: beb84efc5791317499cd610118e73a3b
   - enabled: 1
-    path: Assets/Scenes/Board Select.unity
-    guid: 7d6c275dae47bca4abd480efb328f2d4
+    path: Assets/Scenes/4x4.unity
+    guid: 7f0f41da83003ee43a5bb0af3be060b9
+  - enabled: 1
+    path: Assets/Scenes/5x3.unity
+    guid: 74c585483ddafba4d81c12e7f8de2aca
+  - enabled: 1
+    path: Assets/Scenes/5x4.unity
+    guid: d48290d8afc06a2498360b5820271eb6
+  - enabled: 1
+    path: Assets/Scenes/5x5.unity
+    guid: 1a0c21a80d9068443a4bdfbeeac8def4
+  - enabled: 1
+    path: Assets/Scenes/Result.unity
+    guid: 5dcf54e2be7baae4f8640aa1fc5a949a
+  - enabled: 1
+    path: Assets/Scenes/How to play.unity
+    guid: b524ec7ce7659664ba671c1c8357601d
   m_configObjects: {}
