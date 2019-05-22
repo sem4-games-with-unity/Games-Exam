@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AI : MonoBehaviour {
     System.Random r = new System.Random();
+    Node curNode;
+    Vector2 from, to;
 
     public ChessFigure SelectChessFigure() {
         List<GameObject> activeFigures = BoardManager.Instance.GetAllActiveFigures();

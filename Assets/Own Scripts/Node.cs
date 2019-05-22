@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Node {
-    int[,] board;
-    bool isWhite, isLeaf = false;
-    List<Node> children = new List<Node>();
-    int depth, score;
+    public int[,] board;
+    public bool isWhite;
+    bool isLeaf = false;
+    public List<Node> children = new List<Node>();
+    int depth;
+    float score;
     List<int[,]> newBoardStates = new List<int[,]>();
-    string nodeName;
+    public string nodeName;
 
     public Node(int[,] board, bool isWhite, int depth, string nodeName) {
         //Debug.Log(nodeName);
@@ -17,25 +19,38 @@ public class Node {
         this.board = board;
         this.nodeName = nodeName;
         SetChildren();
+        //Debug.Log(children.Count);
         CheckLeaf();
     }
 
     public void PrintChildren() {
         Debug.Log(nodeName + ": " + CalcScore());
+        string strBoard = "";
+        for (int y = GameDetails.BoardSizeY - 1; y >= 0; y--) {
+            string row = "";
+            for (int x = 0; x < GameDetails.BoardSizeX; x++) {
+                row += board[x, y] + " ";
+            }
+            strBoard += row + "\n";
+        }
+        Debug.Log(strBoard);
+        if (isLeaf) {
+            Debug.Log("White won? " + !isWhite);
+        }
         foreach (Node n in children) {
             n.PrintChildren();
         }
     }
 
-    int CalcScore() {
+    public float CalcScore() {
         if (isLeaf) {
-            if (isWhite) {
-                score = 1;
+            if (!isWhite) {
+                score = 1f / (float) depth;
             } else {
-                score = -1;
+                score = -1f / (float) depth;
             }
         } else {
-            int sum = 0;
+            float sum = 0;
             foreach (Node n in children) {
                 sum += n.CalcScore();
             }
@@ -66,13 +81,13 @@ public class Node {
     void SetChildren() {
         if (!CheckEndGame()) {
             FindNewBoardStates();
-            int count = 1;
-            foreach (int[,] newBoard in newBoardStates) {
-                string childName = nodeName + "->c" + count;
-                Node child = new Node(newBoard, !isWhite, depth + 1, childName);
-                children.Add(child);
-                count++;
-            }
+            //int count = 1;
+            //foreach (int[,] newBoard in newBoardStates) {
+            //    string childName = nodeName + "->c" + count;
+            //    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+            //    children.Add(child);
+            //    count++;
+            //}
         }
     }
 
@@ -101,6 +116,9 @@ public class Node {
                     newBoard[x, y] = 0;
                     newBoard[x - 1, y + 1] = 1;
                     newBoardStates.Add(newBoard);
+                    string childName = "(" + x + ", " + y + ")->(" + (x - 1) + "," + (y + 1) + ")";
+                    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+                    children.Add(child);
                 }
             }
             // Diagonal Right
@@ -110,6 +128,9 @@ public class Node {
                     newBoard[x, y] = 0;
                     newBoard[x + 1, y + 1] = 1;
                     newBoardStates.Add(newBoard);
+                    string childName = "(" + x + ", " + y + ")->(" + (x + 1) + "," + (y + 1) + ")";
+                    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+                    children.Add(child);
                 }
             }
             // Forward
@@ -119,6 +140,9 @@ public class Node {
                     newBoard[x, y] = 0;
                     newBoard[x, y + 1] = 1;
                     newBoardStates.Add(newBoard);
+                    string childName = "(" + x + ", " + y + ")->(" + x + "," + (y + 1) + ")";
+                    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+                    children.Add(child);
                 }
             }
         } else {
@@ -129,6 +153,9 @@ public class Node {
                     newBoard[x, y] = 0;
                     newBoard[x - 1, y - 1] = -1;
                     newBoardStates.Add(newBoard);
+                    string childName = "(" + x + ", " + y + ")->(" + (x - 1) + "," + (y - 1) + ")";
+                    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+                    children.Add(child);
                 }
             }
             // Diagonal Right
@@ -138,6 +165,9 @@ public class Node {
                     newBoard[x, y] = 0;
                     newBoard[x + 1, y - 1] = -1;
                     newBoardStates.Add(newBoard);
+                    string childName = "(" + x + ", " + y + ")->(" + (x + 1) + "," + (y - 1) + ")";
+                    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+                    children.Add(child);
                 }
             }
             // Forward
@@ -147,6 +177,9 @@ public class Node {
                     newBoard[x, y] = 0;
                     newBoard[x, y - 1] = -1;
                     newBoardStates.Add(newBoard);
+                    string childName = "(" + x + ", " + y + ")->(" + x + "," + (y - 1) + ")";
+                    Node child = new Node(newBoard, !isWhite, depth + 1, childName);
+                    children.Add(child);
                 }
             }
         }

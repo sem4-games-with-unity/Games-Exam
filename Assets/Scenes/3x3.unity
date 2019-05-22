@@ -534,6 +534,7 @@ MonoBehaviour:
   - {fileID: 1109215888586288, guid: cab5f13ae783c0e47bebde00fd0357a5, type: 3}
   - {fileID: 1335334207052556, guid: e0c5356476a49ba449f2789ccdbf2c24, type: 3}
   isWhiteTurn: 1
+  useGameTree: 1
   ai: {fileID: 2053723317}
 --- !u!4 &2053723315
 Transform:
