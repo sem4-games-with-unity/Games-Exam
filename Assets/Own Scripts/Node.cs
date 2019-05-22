@@ -23,8 +23,7 @@ public class Node {
         CheckLeaf();
     }
 
-    public void PrintChildren() {
-        Debug.Log(nodeName + ": " + CalcScore());
+    public void PrintBoard() {
         string strBoard = "";
         for (int y = GameDetails.BoardSizeY - 1; y >= 0; y--) {
             string row = "";
@@ -34,12 +33,6 @@ public class Node {
             strBoard += row + "\n";
         }
         Debug.Log(strBoard);
-        if (isLeaf) {
-            Debug.Log("White won? " + !isWhite);
-        }
-        foreach (Node n in children) {
-            n.PrintChildren();
-        }
     }
 
     public float CalcScore() {

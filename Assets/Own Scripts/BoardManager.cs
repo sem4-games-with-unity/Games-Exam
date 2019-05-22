@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using DG.Tweening;
 using System;
 using System.Threading;
+using System.Linq;
 
 public class BoardManager : MonoBehaviour {
     public static BoardManager Instance {
@@ -36,24 +37,25 @@ public class BoardManager : MonoBehaviour {
         ChessFigurePositions = new ChessFigure[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
         SpawnAllChessFigures();
         useAI = GameDetails.GameMode == GameDetails.Mode.Singleplayer;
-        //if (useAI) {
-        //myThread = new Thread(MakeGameTree);
-        //myThread.Start();
-        //}
+        if (useAI) {
+            myThread = new Thread(MakeGameTree);
+            myThread.Start();
+        }
     }
 
     // Start is called before the first frame update
     void Start() {
         if (useAI) {
-            MakeGameTree();
-            //lock (lockingObject) {
-            curNode = rootNode;
-            //}
+            //MakeGameTree();
+            lock (lockingObject) {
+                curNode = rootNode;
+            }
         }
     }
 
     // Update is called once per frame
     void Update() {
+        Debug.Log("Current board");
         PrintBoard();
         DrawChessBoard();
         UpdateSelection();
@@ -89,10 +91,14 @@ public class BoardManager : MonoBehaviour {
                                             minScore = score;
                                         }
                                     }
+                                    Debug.Log("curNode board");
+                                    curNode.PrintBoard();
+                                    Debug.Log("best child board");
+                                    best.PrintBoard();
                                     for (int x = 0; x < GameDetails.BoardSizeX; x++) {
                                         for (int y = 0; y < GameDetails.BoardSizeY; y++) {
                                             if (curNode.board[x, y] == -1 && best.board[x, y] == 0) {
-                                                selectedFigure = ChessFigurePositions[x, y];
+                                                SelectChessFigure(x, y);
                                             }
                                         }
                                     }
@@ -158,6 +164,7 @@ public class BoardManager : MonoBehaviour {
 
     private void SetCurNode() {
         if (curNode != null) {
+            Debug.Log("curNode name: " + curNode.nodeName);
             int[,] newBoard = new int[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
             for (int x = 0; x < GameDetails.BoardSizeX; x++) {
                 for (int y = 0; y < GameDetails.BoardSizeY; y++) {
@@ -173,31 +180,39 @@ public class BoardManager : MonoBehaviour {
                 }
             }
             foreach (Node n in curNode.children) {
-                bool found = false;
-                for (int x = 0; x < GameDetails.BoardSizeX; x++) {
-                    for (int y = 0; y < GameDetails.BoardSizeY; y++) {
-                        if (n.board[x, y] == newBoard[x, y]) {
-                            curNode = n;
-                            found = true;
-                            x = GameDetails.BoardSizeX;
-                            break;
-                        }
-                    }
+                if (ArraysEqual(newBoard, n)) {
+                    break;
                 }
-                if (found) {
+            }
+            Debug.Log("curNode name: " + curNode.nodeName);
+        }
+    }
+
+    private bool ArraysEqual(int[,] newBoard, Node n) {
+        bool found = true;
+        for (int x = 0; x < GameDetails.BoardSizeX; x++) {
+            for (int y = 0; y < GameDetails.BoardSizeY; y++) {
+                if (n.board[x, y] != newBoard[x, y]) {
+                    curNode = n;
+                    found = false;
+                    x = GameDetails.BoardSizeX;
                     break;
                 }
             }
         }
+        return found;
     }
 
     private void SelectChessFigure(int x, int y) {
-        if (ChessFigurePositions[x, y] == null)
+        Debug.Log("Selecting Pawn");
+        ChessFigure cf = ChessFigurePositions[x, y];
+        Debug.Log(cf);
+        if (cf == null)
             return;
-        if (ChessFigurePositions[x, y].isWhite != isWhiteTurn)
+        if (cf.isWhite != isWhiteTurn)
             return;
         bool hasAtLeastOneMove = false;
-        allowedMoves = ChessFigurePositions[x, y].PossibleMove();
+        allowedMoves = cf.PossibleMove();
         for (int i = 0; i < GameDetails.BoardSizeX; i++) {
             for (int j = 0; j < GameDetails.BoardSizeY; j++) {
                 if (allowedMoves[i, j]) {
@@ -209,7 +224,8 @@ public class BoardManager : MonoBehaviour {
         }
         if (!hasAtLeastOneMove)
             return;
-        selectedFigure = ChessFigurePositions[x, y];
+        selectedFigure = cf;
+        Debug.Log("Pawn Selected");
         BoardHighlighting.Instance.HighlightAllowedMoves(allowedMoves);
     }
 
@@ -248,6 +264,7 @@ public class BoardManager : MonoBehaviour {
             //selectedFigure.transform.position = GetTileCenter(x, y);
             selectedFigure.SetPosition(x, y);
             ChessFigurePositions[x, y] = selectedFigure;
+            Debug.Log("Moved Pawn");
             if (y == 0 || y == GameDetails.BoardSizeY - 1) {
                 endgame = true;
                 StartCoroutine(EndGame(false));
