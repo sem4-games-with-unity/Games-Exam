@@ -38,16 +38,16 @@ public class Node {
     public float CalcScore() {
         if (isLeaf) {
             if (!isWhite) {
-                score = 1f;
+                score = 100f / depth;
             } else {
-                score = -1f;
+                score = -100f / depth;
             }
         } else {
             float sum = 0;
             foreach (Node n in children) {
                 sum += n.CalcScore();
             }
-            score = sum;
+            score = sum / children.Count;
         }
         return score;
     }
