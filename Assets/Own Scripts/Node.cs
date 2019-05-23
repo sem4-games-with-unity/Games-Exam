@@ -38,9 +38,9 @@ public class Node {
     public float CalcScore() {
         if (isLeaf) {
             if (!isWhite) {
-                score = 1f / (float) depth;
+                score = 1f;
             } else {
-                score = -1f / (float) depth;
+                score = -1f;
             }
         } else {
             float sum = 0;

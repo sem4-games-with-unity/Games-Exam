@@ -55,8 +55,6 @@ public class BoardManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        Debug.Log("Current board");
-        PrintBoard();
         DrawChessBoard();
         UpdateSelection();
         hasLegalMoves = CheckLegalMoves();
@@ -91,10 +89,6 @@ public class BoardManager : MonoBehaviour {
                                             minScore = score;
                                         }
                                     }
-                                    Debug.Log("curNode board");
-                                    curNode.PrintBoard();
-                                    Debug.Log("best child board");
-                                    best.PrintBoard();
                                     for (int x = 0; x < GameDetails.BoardSizeX; x++) {
                                         for (int y = 0; y < GameDetails.BoardSizeY; y++) {
                                             if (curNode.board[x, y] == -1 && best.board[x, y] == 0) {
@@ -164,7 +158,6 @@ public class BoardManager : MonoBehaviour {
 
     private void SetCurNode() {
         if (curNode != null) {
-            Debug.Log("curNode name: " + curNode.nodeName);
             int[,] newBoard = new int[GameDetails.BoardSizeX, GameDetails.BoardSizeY];
             for (int x = 0; x < GameDetails.BoardSizeX; x++) {
                 for (int y = 0; y < GameDetails.BoardSizeY; y++) {
@@ -181,32 +174,26 @@ public class BoardManager : MonoBehaviour {
             }
             foreach (Node n in curNode.children) {
                 if (ArraysEqual(newBoard, n)) {
+                    curNode = n;
                     break;
                 }
             }
-            Debug.Log("curNode name: " + curNode.nodeName);
         }
     }
 
     private bool ArraysEqual(int[,] newBoard, Node n) {
-        bool found = true;
         for (int x = 0; x < GameDetails.BoardSizeX; x++) {
             for (int y = 0; y < GameDetails.BoardSizeY; y++) {
                 if (n.board[x, y] != newBoard[x, y]) {
-                    curNode = n;
-                    found = false;
-                    x = GameDetails.BoardSizeX;
-                    break;
+                    return false;
                 }
             }
         }
-        return found;
+        return true;
     }
 
     private void SelectChessFigure(int x, int y) {
-        Debug.Log("Selecting Pawn");
         ChessFigure cf = ChessFigurePositions[x, y];
-        Debug.Log(cf);
         if (cf == null)
             return;
         if (cf.isWhite != isWhiteTurn)
@@ -225,7 +212,6 @@ public class BoardManager : MonoBehaviour {
         if (!hasAtLeastOneMove)
             return;
         selectedFigure = cf;
-        Debug.Log("Pawn Selected");
         BoardHighlighting.Instance.HighlightAllowedMoves(allowedMoves);
     }
 
@@ -253,7 +239,6 @@ public class BoardManager : MonoBehaviour {
 
     private void MoveChessFigure(int x, int y) {
         if (allowedMoves[x, y]) {
-            Debug.Log("Move allowed");
             ChessFigure c = ChessFigurePositions[x, y];
             if (c != null && c.isWhite != isWhiteTurn) {
                 activeFigures.Remove(c.gameObject);
@@ -264,15 +249,14 @@ public class BoardManager : MonoBehaviour {
             //selectedFigure.transform.position = GetTileCenter(x, y);
             selectedFigure.SetPosition(x, y);
             ChessFigurePositions[x, y] = selectedFigure;
-            Debug.Log("Moved Pawn");
             if (y == 0 || y == GameDetails.BoardSizeY - 1) {
                 endgame = true;
                 StartCoroutine(EndGame(false));
             } else {
                 isWhiteTurn = !isWhiteTurn;
             }
-            selectedFigure = null;
         }
+        selectedFigure = null;
         BoardHighlighting.Instance.HideHighlights();
     }
 
@@ -369,14 +353,14 @@ public class BoardManager : MonoBehaviour {
                 if (GameDetails.BoardSizeX == 3 && GameDetails.BoardSizeY == 3) {
                     rootNode = new Node(new int[,] { { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 } }, true, 0, "root");
                 }
-                //if (GameDetails.BoardSizeX == 4 && GameDetails.BoardSizeY == 3) {
-                //    rootNode = new Node(new int[,] { { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 } }, true, 0, "root");
-                //}
+                if (GameDetails.BoardSizeX == 4 && GameDetails.BoardSizeY == 3) {
+                    rootNode = new Node(new int[,] { { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 } }, true, 0, "root");
+                }
+                if (GameDetails.BoardSizeX == 5 && GameDetails.BoardSizeY == 3) {
+                    rootNode = new Node(new int[,] { { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 } }, true, 0, "root");
+                }
                 //if (GameDetails.BoardSizeX == 4 && GameDetails.BoardSizeY == 4) {
                 //    rootNode = new Node(new int[,] { { 1, 0, 0, -1 }, { 1, 0, 0, -1 }, { 1, 0, 0, -1 }, { 1, 0, 0, -1 } }, true, 0, "root");
-                //}
-                //if (GameDetails.BoardSizeX == 5 && GameDetails.BoardSizeY == 3) {
-                //    rootNode = new Node(new int[,] { { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 }, { 1, 0, -1 } }, true, 0, "root");
                 //}
                 //if (GameDetails.BoardSizeX == 5 && GameDetails.BoardSizeY == 4) {
                 //    rootNode = new Node(new int[,] { { 1, 0, 0, -1 }, { 1, 0, 0, -1 }, { 1, 0, 0, -1 }, { 1, 0, 0, -1 }, { 1, 0, 0, -1 } }, true, 0, "root");
