@@ -31,6 +31,8 @@ public class BoardManager : MonoBehaviour {
     Node curNode;
     private Thread myThread;
     readonly object lockingObject = new object();
+    public AudioSource audioSource;
+    public AudioClip pick, cancel, move;
 
     private void Awake() {
         Instance = this;
@@ -212,6 +214,7 @@ public class BoardManager : MonoBehaviour {
         if (!hasAtLeastOneMove)
             return;
         selectedFigure = cf;
+        PlayAudio(pick);
         BoardHighlighting.Instance.HighlightAllowedMoves(allowedMoves);
     }
 
@@ -249,15 +252,23 @@ public class BoardManager : MonoBehaviour {
             //selectedFigure.transform.position = GetTileCenter(x, y);
             selectedFigure.SetPosition(x, y);
             ChessFigurePositions[x, y] = selectedFigure;
+            PlayAudio(move);
             if (y == 0 || y == GameDetails.BoardSizeY - 1) {
                 endgame = true;
                 StartCoroutine(EndGame(false));
             } else {
                 isWhiteTurn = !isWhiteTurn;
             }
+        } else {
+            PlayAudio(cancel);
         }
         selectedFigure = null;
         BoardHighlighting.Instance.HideHighlights();
+    }
+
+    void PlayAudio(AudioClip clip) {
+        audioSource.clip = clip;
+        audioSource.Play();
     }
 
     private void DrawChessBoard() {
